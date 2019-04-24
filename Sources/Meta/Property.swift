@@ -93,6 +93,65 @@ public struct ComputedProperty: Node {
 
 extension ComputedProperty: TypeBodyMember {}
 
+public struct GetterSetter: Node {
+    
+    public var accessLevel: AccessLevel = .default
+    
+    public let variable: Variable
+    
+    public var getterBody: [FunctionBodyMember]?
+    
+    public var setterBody: [FunctionBodyMember]?
+    
+    public init(variable: Variable) {
+        self.variable = variable
+    }
+    
+    public func with(accessLevel: AccessLevel) -> GetterSetter {
+        var _self = self
+        _self.accessLevel = accessLevel
+        return _self
+    }
+    
+    public func with(getter body: [FunctionBodyMember]?) -> GetterSetter {
+        var _self = self
+        _self.getterBody = body
+        return _self
+    }
+    
+    public func adding(getterMember: FunctionBodyMember?) -> GetterSetter {
+        var _self = self
+        _self.getterBody = (_self.getterBody ?? []) + [getterMember].compactMap { $0 }
+        return _self
+    }
+    
+    public func adding(getterMember: [FunctionBodyMember]) -> GetterSetter {
+        var _self = self
+        _self.getterBody = (_self.getterBody ?? []) + getterMember
+        return _self
+    }
+    
+    public func with(setter body: [FunctionBodyMember]?) -> GetterSetter {
+        var _self = self
+        _self.setterBody = body
+        return _self
+    }
+    
+    public func adding(setterMember: FunctionBodyMember?) -> GetterSetter {
+        var _self = self
+        _self.setterBody = (_self.setterBody ?? []) + [setterMember].compactMap { $0 }
+        return _self
+    }
+    
+    public func adding(setterMember: [FunctionBodyMember]) -> GetterSetter {
+        var _self = self
+        _self.setterBody = (_self.setterBody ?? []) + setterMember
+        return _self
+    }
+}
+
+extension GetterSetter: TypeBodyMember {}
+
 // MARK: - MetaSwiftConvertible
 
 extension Property {
@@ -116,6 +175,41 @@ extension ComputedProperty {
         return """
         \(accessLevel.swiftString.suffixed(" "))\(variable.with(immutable: false).swiftString) {
         \(body.map { $0.swiftString }.indented)
+        }
+        """
+    }
+}
+
+extension GetterSetter {
+    
+    public var swiftString: String {
+        
+        let getter: String
+        if let getterBody = getterBody {
+            getter = """
+            get {
+            \(getterBody.map {$0.swiftString }.indented)
+            }
+            """
+        } else {
+            getter = .empty
+        }
+        
+        let setter: String
+        if let setterBody = setterBody {
+            setter = """
+            
+            set {
+            \(setterBody.map {$0.swiftString }.indented)
+            }
+            """
+        } else {
+            setter = .empty
+        }
+
+        return """
+        \(accessLevel.swiftString.suffixed(" "))\(variable.with(immutable: false).swiftString) {
+        \(getter.indented)\(setter.indented)
         }
         """
     }
