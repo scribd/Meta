@@ -11,6 +11,8 @@ public enum Value: Hashable, Node {
     case string(String)
     case int(Int)
     case bool(Bool)
+    case float(Float)
+    case double(Double)
     case `nil`
 }
 
@@ -28,6 +30,10 @@ extension Value {
             return value.description
         case .bool(let value):
             return value ? "true" : "false"
+        case .float(let value):
+            return value.description
+        case .double(let value):
+            return value.description
         case .nil:
             return "nil"
         }
