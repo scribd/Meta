@@ -17,6 +17,8 @@ public struct FunctionParameter: MetaSwiftConvertible {
     
     public var named: Bool = true
     
+    public var `inout`: Bool = false
+    
     public init(alias: String? = nil, name: String, type: TypeIdentifier) {
         self.alias = alias
         self.name = name
@@ -32,6 +34,12 @@ public struct FunctionParameter: MetaSwiftConvertible {
     public func with(named: Bool) -> FunctionParameter {
         var _self = self
         _self.named = named
+        return _self
+    }
+    
+    public func with(`inout`: Bool) -> FunctionParameter {
+        var _self = self
+        _self.inout = `inout`
         return _self
     }
 }
@@ -312,7 +320,8 @@ extension FunctionParameter {
         let alias = self.alias?.suffixed(" ") ?? .empty
         let named = self.named ? .empty : "_ "
         let defaultValue = self.defaultValue.flatMap { $0.swiftString.prefixed(" = ") } ?? .empty
-        return "\(alias)\(named)\(name): \(type.swiftString)\(defaultValue)"
+        let `inout` = self.inout ? "inout " : .empty
+        return "\(alias)\(named)\(name): \(`inout`)\(type.swiftString)\(defaultValue)"
     }
 }
 
