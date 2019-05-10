@@ -25,6 +25,7 @@ public enum Reference: Node {
     case optionalTry
     case `throw`
     case block(FunctionBody)
+    case `as`
     case none
     indirect case dot(Reference, Reference)
     indirect case assemble(Reference, Reference)
@@ -50,7 +51,8 @@ public enum Reference: Node {
              .try,
              .optionalTry,
              .throw,
-             .block:
+             .block,
+             .as:
             return [self]
         case .none:
             return []
@@ -145,6 +147,8 @@ extension Reference {
             return "throw "
         case .block(let block):
             return block.swiftString.prefixed(" ")
+        case .as:
+            return " as "
         case .none:
             return ""
         }
