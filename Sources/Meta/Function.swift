@@ -141,6 +141,8 @@ public struct Function: Node {
     
     public var override = false
     
+    public var objc = false
+    
     public init(kind: FunctionKind) {
         self.kind = kind
     }
@@ -244,6 +246,12 @@ public struct Function: Node {
     public func with(override: Bool) -> Function {
         var _self = self
         _self.override = override
+        return _self
+    }
+    
+    public func with(objc: Bool) -> Function {
+        var _self = self
+        _self.objc = objc
         return _self
     }
 }
@@ -378,6 +386,7 @@ extension Function {
     
     public var swiftString: String {
         let `static` = self.static ? "static " : .empty
+        let objc = self.objc ? "@objc " : .empty
         let accessLevel = self.accessLevel.swiftString.suffixed(" ")
         
         let genericParameters = self.genericParameters
@@ -396,7 +405,7 @@ extension Function {
         
         let override = self.override ? "override " : .empty
 
-        let beforeParameters = "\(accessLevel)\(override)\(`static`)\(kind.swiftString)\(genericParameters)("
+        let beforeParameters = "\(objc)\(accessLevel)\(override)\(`static`)\(kind.swiftString)\(genericParameters)("
         var parameters = self.parameters
             .map { $0.swiftString }
             .joined(separator: ", ")
