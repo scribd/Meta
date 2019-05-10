@@ -168,6 +168,8 @@ public struct Type: FileBodyMember, TypeBodyMember {
     public var body: [TypeBodyMember] = []
     
     public var constraints: [LogicalStatement] = []
+    
+    public var objc = false
 
     public init(name: TypeIdentifierName) {
         self.name = name
@@ -264,6 +266,12 @@ public struct Type: FileBodyMember, TypeBodyMember {
         _self.constraints += constraints
         return _self
     }
+    
+    public func with(objc: Bool) -> Type {
+        var _self = self
+        _self.objc = objc
+        return _self
+    }
 }
 
 // MARK: - MetaSwiftConvertible
@@ -308,6 +316,8 @@ extension TypeIdentifier {
 extension Type {
     
     public var swiftString: String {
+        let objc = self.objc ? "@objc " : .empty
+        
         let genericParameters = self.genericParameters
             .map { $0.swiftString }
             .joined(separator: ", ")
@@ -324,7 +334,7 @@ extension Type {
             .prefixed(" where ")
         
         return """
-        \(accessLevel.swiftString.suffixed(" "))\(kind.swiftString) \(name.swiftString)\(genericParameters)\(inheritedTypes)\(constraints) {
+        \(objc)\(accessLevel.swiftString.suffixed(" "))\(kind.swiftString) \(name.swiftString)\(genericParameters)\(inheritedTypes)\(constraints) {
         \(body.map { $0.swiftString }.indented)\
         }
         """
