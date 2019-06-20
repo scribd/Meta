@@ -12,7 +12,9 @@ extension String {
     static let tab: String = "    "
     static let empty: String = ""
     static let doubleQuote: String = "\""
-    
+    static let openingSquareBracket: String = "["
+    static let closingSquareBracket: String = "]"
+
     static func br(_ count: Int) -> String {
         return String.br.repeat(count)
     }

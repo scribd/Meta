@@ -14,6 +14,7 @@ public enum Value: Hashable, Node {
     case float(Float)
     case double(Double)
     case `nil`
+    indirect case array([Value])
 }
 
 extension Value: VariableValue {}
@@ -36,6 +37,11 @@ extension Value {
             return value.description
         case .nil:
             return "nil"
+        case .array(let values):
+            var expression = String()
+            values.dropLast().forEach { expression.append("\($0.swiftString), ") }
+            expression.append("\(values.last?.swiftString ?? String())")
+            return expression.wrapped(.openingSquareBracket, .closingSquareBracket, compact: false)
         }
     }
 }

@@ -8,12 +8,15 @@
 public struct Property: Node {
     
     public var accessLevel: AccessLevel = .default
-
+    
     public var objc = false
-
+    
+    public var `static` = false
+    
     public let variable: Variable
     
     public var value: VariableValue?
+    
     
     public init(variable: Variable) {
         self.variable = variable
@@ -28,6 +31,12 @@ public struct Property: Node {
     public func with(objc: Bool) -> Property {
         var _self = self
         _self.objc = objc
+        return _self
+    }
+    
+    public func with(static: Bool) -> Property {
+        var _self = self
+        _self.static = `static`
         return _self
     }
     
@@ -65,7 +74,7 @@ extension ProtocolProperty: TypeBodyMember {}
 public struct ComputedProperty: Node {
     
     public var accessLevel: AccessLevel = .default
-
+    
     public var objc = false
     
     public let variable: Variable
@@ -174,8 +183,9 @@ extension Property {
     
     public var swiftString: String {
         let objc = self.objc ? "@objc " : .empty
+        let `static` = self.static ? "static " : .empty
         let value = self.value?.swiftString.prefixed(" = ") ?? .empty
-        return "\(objc)\(accessLevel.swiftString.suffixed(" "))\(variable.swiftString)\(value)"
+        return "\(objc)\(`static`)\(accessLevel.swiftString.suffixed(" "))\(variable.swiftString)\(value)"
     }
 }
 
@@ -224,7 +234,7 @@ extension GetterSetter {
         } else {
             setter = .empty
         }
-
+        
         return """
         \(accessLevel.swiftString.suffixed(" "))\(variable.with(immutable: false).swiftString) {
         \(getter.indented)\(setter.indented)
