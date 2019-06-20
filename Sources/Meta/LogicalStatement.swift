@@ -19,6 +19,8 @@ public enum Operator: String, MetaSwiftConvertible {
     case nilCoalescing = "??"
     case constraintImplement = ":"
     case `is` = "is"
+    case and = "&&"
+    case or = "||"
 }
 
 public enum LogicalStatement: MetaSwiftConvertible {
@@ -467,6 +469,50 @@ public func ?? (_ lhs: Reference, _ rhs: Reference) -> LogicalStatement {
 
 public func ?? (_ lhs: Reference, _ rhs: LogicalStatement) -> LogicalStatement {
     return .value(lhs) ?? rhs
+}
+
+// MARK: - And
+
+public func && (_ lhs: LogicalStatement, _ rhs: LogicalStatement) -> LogicalStatement {
+    return .assemble(lhs, .and, rhs)
+}
+
+public func && (_ lhs: LogicalStatement?, _ rhs: LogicalStatement) -> LogicalStatement? {
+    if let lhs = lhs {
+        return .assemble(lhs, .and, rhs)
+    } else {
+        return rhs
+    }
+}
+
+public func && (_ lhs: Reference, _ rhs: Reference) -> LogicalStatement {
+    return .value(lhs) && .value(rhs)
+}
+
+public func && (_ lhs: Reference, _ rhs: LogicalStatement) -> LogicalStatement {
+    return .value(lhs) && rhs
+}
+
+// MARK: - Or
+
+public func || (_ lhs: LogicalStatement, _ rhs: LogicalStatement) -> LogicalStatement {
+    return .assemble(lhs, .or, rhs)
+}
+
+public func || (_ lhs: LogicalStatement?, _ rhs: LogicalStatement) -> LogicalStatement? {
+    if let lhs = lhs {
+        return .assemble(lhs, .or, rhs)
+    } else {
+        return rhs
+    }
+}
+
+public func || (_ lhs: Reference, _ rhs: Reference) -> LogicalStatement {
+    return .value(lhs) || .value(rhs)
+}
+
+public func || (_ lhs: Reference, _ rhs: LogicalStatement) -> LogicalStatement {
+    return .value(lhs) || rhs
 }
 
 // MARK: - MetaSwiftConvertible

@@ -29,7 +29,7 @@ final class FileTests: XCTestCase {
             )
             .adding(member: EmptyLine())
             .adding(member:
-                Function(kind: .init(convenience: false))
+                Function(kind: .`init`(convenience: false))
                     .with(throws: true)
                     .adding(parameter:
                         FunctionParameter(name: "fuu", type: fuuID).with(defaultValue:
