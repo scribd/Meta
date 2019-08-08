@@ -45,9 +45,16 @@ public struct FunctionParameter: MetaSwiftConvertible {
 }
 
 public enum FunctionKind: MetaSwiftConvertible {
-    case `init`(convenience: Bool)
+    case _init(convenience: Bool, optional: Bool)
     case `operator`(Operator)
     case named(String)
+    
+    public static func `init`(convenience: Bool = false,
+                              optional: Bool = false) -> FunctionKind {
+        return ._init(convenience: convenience, optional: optional)
+    }
+    
+    public static let `init` = FunctionKind.`init`()
 }
 
 public struct FunctionBodyParameter: MetaSwiftConvertible {
@@ -337,8 +344,8 @@ extension FunctionKind {
     
     public var swiftString: String {
         switch self {
-        case .`init`(let convenience):
-            return "\(convenience ? "convenience " : .empty)init"
+        case ._init(let convenience, let optional):
+            return "\(convenience ? "convenience " : .empty)init\(optional ? "?" : .empty)"
         case .operator(let op):
             return "func \(op.swiftString) "
         case .named(let name):
