@@ -11,6 +11,17 @@ public protocol MetaSwiftConvertible {
     var swiftString: String { get }
 }
 
+extension Hashable where Self: MetaSwiftConvertible {
+    
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.swiftString == rhs.swiftString
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(swiftString)
+    }
+}
+
 extension RawRepresentable where RawValue == String {
     public var swiftString: String {
         return rawValue

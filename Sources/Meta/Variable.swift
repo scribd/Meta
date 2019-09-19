@@ -13,7 +13,7 @@ public enum VariableKind: String, MetaSwiftConvertible {
     public static let `default`: VariableKind = .none
 }
 
-public struct Variable: MetaSwiftConvertible {
+public struct Variable: Hashable, MetaSwiftConvertible {
 
     public let name: String
     
@@ -66,7 +66,7 @@ public struct Variable: MetaSwiftConvertible {
     }
 }
 
-public struct Assignment: Node {
+public struct Assignment: Hashable, Node {
     
     public var variables: [AssignmentVariable] = []
     

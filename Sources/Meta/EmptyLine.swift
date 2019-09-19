@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/3/19.
 //
 
-public struct EmptyLine: Node {
+public struct EmptyLine: Hashable, Node {
     public let swiftString: String = " "
     
     public init() {

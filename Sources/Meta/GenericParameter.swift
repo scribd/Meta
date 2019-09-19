@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/3/19.
 //
 
-public struct GenericParameter: MetaSwiftConvertible {
+public struct GenericParameter: Hashable, MetaSwiftConvertible {
     
     public let name: String
     

@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 4/17/19.
 //
 
-public struct PlainCode: Node {
+public struct PlainCode: Hashable, Node {
     
     public let code: String
     
@@ -20,7 +20,7 @@ extension PlainCode: TypeBodyMember {}
 extension PlainCode: FileBodyMember {}
 extension PlainCode: AssignmentVariable {}
 
-public struct MetaCode: CustomStringConvertible {
+public struct MetaCode: Hashable, MetaSwiftConvertible, CustomStringConvertible {
     
     public let indentation: Int
     
@@ -52,6 +52,10 @@ extension PlainCode {
 extension MetaCode {
     
     public var description: String {
+        return swiftString
+    }
+
+    public var swiftString: String {
         var string = metaElements
             .map { $0.swiftString }
             .indented(indentation)

@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/25/19.
 //
 
-public struct Catch: MetaSwiftConvertible {
+public struct Catch: Hashable, MetaSwiftConvertible {
     
     public let assignment: Assignment?
     
@@ -34,7 +34,7 @@ public struct Catch: MetaSwiftConvertible {
     }
 }
 
-public struct Do: Node {
+public struct Do: Hashable, Node {
   
     public let body: [FunctionBodyMember]
     

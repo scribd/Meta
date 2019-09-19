@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/3/19.
 //
 
-public struct FunctionParameter: MetaSwiftConvertible {
+public struct FunctionParameter: Hashable, MetaSwiftConvertible {
     
     public let alias: String?
     
@@ -44,7 +44,7 @@ public struct FunctionParameter: MetaSwiftConvertible {
     }
 }
 
-public enum FunctionKind: MetaSwiftConvertible {
+public enum FunctionKind: Hashable, MetaSwiftConvertible {
     case _init(convenience: Bool, optional: Bool)
     case `operator`(Operator)
     case named(String)
@@ -57,7 +57,7 @@ public enum FunctionKind: MetaSwiftConvertible {
     public static let `init` = FunctionKind.`init`()
 }
 
-public struct FunctionBodyParameter: MetaSwiftConvertible {
+public struct FunctionBodyParameter: Hashable, MetaSwiftConvertible {
     
     public let name: String?
     
@@ -69,7 +69,7 @@ public struct FunctionBodyParameter: MetaSwiftConvertible {
     }
 }
 
-public struct FunctionBody: MetaSwiftConvertible {
+public struct FunctionBody: Hashable, MetaSwiftConvertible {
     
     public var members: [FunctionBodyMember] = []
     
@@ -126,7 +126,7 @@ public struct FunctionBody: MetaSwiftConvertible {
 
 extension FunctionBody: VariableValue {}
 
-public struct Function: Node {
+public struct Function: Hashable, Node {
     
     public let kind: FunctionKind
     
@@ -266,7 +266,7 @@ public struct Function: Node {
 extension Function: FileBodyMember {}
 extension Function: TypeBodyMember {}
 
-public struct ProtocolFunction: Node {
+public struct ProtocolFunction: Hashable, Node {
     
     public let name: String
     

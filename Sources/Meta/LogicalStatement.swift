@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/22/19.
 //
 
-public enum Operator: String, MetaSwiftConvertible {
+public enum Operator: String, Hashable, MetaSwiftConvertible {
     case equal = "=="
     case greaterThan = ">"
     case greaterThanOrEqual = ">="
@@ -23,7 +23,7 @@ public enum Operator: String, MetaSwiftConvertible {
     case or = "||"
 }
 
-public enum LogicalStatement: MetaSwiftConvertible {
+public enum LogicalStatement: Hashable, MetaSwiftConvertible {
     case value(VariableValue)
     indirect case assemble(LogicalStatement, Operator, LogicalStatement)
     indirect case ternary(condition: LogicalStatement, left: LogicalStatement, right: LogicalStatement)
@@ -32,7 +32,7 @@ public enum LogicalStatement: MetaSwiftConvertible {
 extension LogicalStatement: FunctionBodyMember {}
 extension LogicalStatement: VariableValue {}
 
-public struct Guard: Node {
+public struct Guard: Hashable, Node {
     
     public var assignments: [Assignment]
     
@@ -107,7 +107,7 @@ public struct Guard: Node {
 
 extension Guard: FunctionBodyMember {}
 
-public struct ElseIf: Node {
+public struct ElseIf: Hashable, Node {
     
     public var ifs: [If]
     
@@ -156,7 +156,7 @@ public struct ElseIf: Node {
 
 extension ElseIf: FunctionBodyMember {}
 
-public struct If: Node {
+public struct If: Hashable, Node {
     
     public var assignments: [Assignment]
     
