@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/8/19.
 //
 
-public struct SwitchCaseVariable: MetaSwiftConvertible {
+public struct SwitchCaseVariable: Hashable, MetaSwiftConvertible {
     
     public let name: String
     
@@ -19,12 +19,12 @@ public struct SwitchCaseVariable: MetaSwiftConvertible {
 
 extension SwitchCaseVariable: VariableValue {}
 
-public enum SwitchCaseName: MetaSwiftConvertible {
+public enum SwitchCaseName: Hashable, MetaSwiftConvertible {
     case `default`
     case custom(String)
 }
 
-public struct SwitchCase: MetaSwiftConvertible {
+public struct SwitchCase: Hashable, MetaSwiftConvertible {
     
     public let name: SwitchCaseName?
 
@@ -77,7 +77,7 @@ public struct SwitchCase: MetaSwiftConvertible {
     }
 }
 
-public struct Switch: Node {
+public struct Switch: Hashable, Node {
     
     public let reference: Reference
     

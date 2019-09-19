@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/3/19.
 //
 
-public enum TypeKind: MetaSwiftConvertible {
+public enum TypeKind: Hashable, MetaSwiftConvertible {
     case `struct`
     case `class`(final: Bool)
     case `protocol`
@@ -153,7 +153,7 @@ public struct TypeIdentifier: Hashable, MetaSwiftConvertible {
     }
 }
 
-public struct Type: FileBodyMember, TypeBodyMember {
+public struct Type: Hashable, FileBodyMember, TypeBodyMember {
     
     public let name: TypeIdentifierName
     

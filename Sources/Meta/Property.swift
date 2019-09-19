@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/4/19.
 //
 
-public struct Property: Node {
+public struct Property: Hashable, Node {
     
     public var accessLevel: AccessLevel = .default
     
@@ -49,7 +49,7 @@ public struct Property: Node {
 
 extension Property: TypeBodyMember {}
 
-public struct ProtocolProperty: Node {
+public struct ProtocolProperty: Hashable, Node {
     
     public let name: String
     
@@ -71,7 +71,7 @@ public struct ProtocolProperty: Node {
 
 extension ProtocolProperty: TypeBodyMember {}
 
-public struct ComputedProperty: Node {
+public struct ComputedProperty: Hashable, Node {
     
     public var accessLevel: AccessLevel = .default
     
@@ -118,7 +118,7 @@ public struct ComputedProperty: Node {
 
 extension ComputedProperty: TypeBodyMember {}
 
-public struct GetterSetter: Node {
+public struct GetterSetter: Hashable, Node {
     
     public var accessLevel: AccessLevel = .default
     

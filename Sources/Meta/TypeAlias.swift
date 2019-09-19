@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/21/19.
 //
 
-public struct TypeAliasIdentifier: MetaSwiftConvertible {
+public struct TypeAliasIdentifier: Hashable, MetaSwiftConvertible {
     
     public let name: TypeIdentifierName
 
@@ -38,7 +38,7 @@ public struct TypeAliasIdentifier: MetaSwiftConvertible {
     }
 }
 
-public struct TypeAlias: MetaSwiftConvertible {
+public struct TypeAlias: Hashable, MetaSwiftConvertible {
     
     public let identifier: TypeAliasIdentifier
 

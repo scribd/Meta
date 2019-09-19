@@ -13,6 +13,7 @@ public enum Value: Hashable, Node {
     case bool(Bool)
     case float(Float)
     case double(Double)
+    case reference(Reference)
     case `nil`
     indirect case array([Value])
 }
@@ -35,13 +36,16 @@ extension Value {
             return value.description
         case .double(let value):
             return value.description
+        case .reference(let reference):
+            return reference.swiftString
         case .nil:
             return "nil"
         case .array(let values):
             var expression = String()
-            values.dropLast().forEach { expression.append("\($0.swiftString), ") }
-            expression.append("\(values.last?.swiftString ?? String())")
-            return expression.wrapped(.openingSquareBracket, .closingSquareBracket, compact: false)
+            values.dropLast().forEach { expression.append("\n\($0.swiftString),") }
+            let newlineOperator = values.isEmpty ? String() : "\n"
+            expression.append("\(newlineOperator)\(values.last?.swiftString ?? String())")
+            return expression.wrapped(.openingSquareBracket, "\(newlineOperator)\(String.closingSquareBracket)", compact: false)
         }
     }
 }

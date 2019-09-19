@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/3/19.
 //
 
-public struct Import: MetaSwiftConvertible {
+public struct Import: Hashable, MetaSwiftConvertible {
     
     public let name: String
     
@@ -17,7 +17,7 @@ public struct Import: MetaSwiftConvertible {
     }
 }
 
-public struct File: MetaSwiftConvertible {
+public struct File: Hashable, MetaSwiftConvertible {
     
     public let name: String
 

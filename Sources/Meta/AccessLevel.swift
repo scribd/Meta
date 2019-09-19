@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/3/19.
 //
 
-public enum AccessLevel: MetaSwiftConvertible {
+public enum AccessLevel: Hashable, MetaSwiftConvertible {
     case `public`
     case `internal`
     case `private`

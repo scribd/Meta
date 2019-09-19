@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Comment: FileBodyMember, TypeBodyMember, FunctionBodyMember {
+public struct Comment: Hashable, FileBodyMember, TypeBodyMember, FunctionBodyMember {
     
     public let content: String
     

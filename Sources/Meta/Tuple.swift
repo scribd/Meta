@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/3/19.
 //
 
-public struct TupleParameter: MetaSwiftConvertible {
+public struct TupleParameter: Hashable, MetaSwiftConvertible {
     
     public let variable: AssignmentVariable?
     
@@ -27,7 +27,7 @@ public struct TupleParameter: MetaSwiftConvertible {
     }
 }
 
-public struct Tuple: Node {
+public struct Tuple: Hashable, Node {
     
     public var parameters: [TupleParameter] = []
     

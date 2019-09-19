@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/3/19.
 //
 
-public enum ReferenceName: MetaSwiftConvertible {
+public enum ReferenceName: Hashable, MetaSwiftConvertible {
     case `init`
     case `self`
     case print
@@ -16,7 +16,7 @@ public enum ReferenceName: MetaSwiftConvertible {
     case custom(String)
 }
 
-public enum Reference: Node {
+public enum Reference: Hashable, MetaSwiftConvertible, Node {
     case type(TypeIdentifier)
     case name(ReferenceName)
     case tuple(Tuple)

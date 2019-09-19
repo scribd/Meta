@@ -5,7 +5,7 @@
 //  Created by Théophane Rupin on 3/4/19.
 //
 
-public struct Extension: Node {
+public struct Extension: Hashable, Node {
     
     public let name: TypeIdentifierName
     
