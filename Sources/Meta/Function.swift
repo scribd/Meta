@@ -445,6 +445,6 @@ extension ProtocolFunction {
         
         let resultType = self.resultType?.swiftString.prefixed(" -> ") ?? .empty
         
-        return "\(accessLevel.swiftString.suffixed(" "))func \(name)\(genericParameters)(\(parameters)\(resultType)"
+        return "\(accessLevel.swiftString.suffixed(" "))func \(name)\(genericParameters)(\(parameters))\(resultType)"
     }
 }
