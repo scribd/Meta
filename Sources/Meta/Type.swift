@@ -83,6 +83,8 @@ public struct TypeIdentifier: Hashable, MetaSwiftConvertible {
     
     public var implicitUnwrap: Bool = false
     
+    public var andTypeIDs: [TypeIdentifier] = []
+    
     public init(name: String) {
         self.name = .custom(name)
     }
@@ -112,6 +114,18 @@ public struct TypeIdentifier: Hashable, MetaSwiftConvertible {
     public func with(implicitUnwrap: Bool) -> TypeIdentifier {
         var _self = self
         _self.implicitUnwrap = implicitUnwrap
+        return _self
+    }
+    
+    public func adding(and typeID: TypeIdentifier) -> TypeIdentifier {
+        var _self = self
+        _self.andTypeIDs.append(typeID)
+        return _self
+    }
+    
+    public func adding(and typeIDs: [TypeIdentifier]) -> TypeIdentifier {
+        var _self = self
+        _self.andTypeIDs.append(contentsOf: typeIDs)
         return _self
     }
     
@@ -308,8 +322,16 @@ extension TypeIdentifier {
             .wrapped("<", ">")
         
         let implicitUnwrap = self.implicitUnwrap ? "!" : .empty
+        
+        let andTypeIDs = self.andTypeIDs.isEmpty ?
+            .empty :
+            " & \(self.andTypeIDs.map { $0.swiftString }.joined(separator: " & "))"
+        
+        let shouldWrapInParenthesis = self.implicitUnwrap && self.andTypeIDs.isEmpty == false
+        let openingParenthesis = shouldWrapInParenthesis ? "(" : .empty
+        let closingParenthesis = shouldWrapInParenthesis ? ")" : .empty
 
-        return "\(name.swiftString)\(genericParameters)\(implicitUnwrap)"
+        return "\(openingParenthesis)\(name.swiftString)\(genericParameters)\(andTypeIDs)\(closingParenthesis)\(implicitUnwrap)"
     }
 }
 
