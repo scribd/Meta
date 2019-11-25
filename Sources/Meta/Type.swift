@@ -135,8 +135,7 @@ public struct TypeIdentifier: Hashable, MetaSwiftConvertible {
         }
         var typeIDs = typeIDs
         typeIDs.removeFirst()
-        first.adding(and: typeIDs)
-        return first
+        return first.adding(and: typeIDs)
     }
     
     public static let string = TypeIdentifier(name: .string)
