@@ -129,6 +129,16 @@ public struct TypeIdentifier: Hashable, MetaSwiftConvertible {
         return _self
     }
     
+    public static func and(_ typeIDs: [TypeIdentifier]) -> TypeIdentifier? {
+        guard let first = typeIDs.first else {
+            return nil
+        }
+        var typeIDs = typeIDs
+        typeIDs.removeFirst()
+        first.adding(and: typeIDs)
+        return first
+    }
+    
     public static let string = TypeIdentifier(name: .string)
     public static let bool = TypeIdentifier(name: .bool)
     public static let int = TypeIdentifier(name: .int)
