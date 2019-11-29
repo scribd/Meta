@@ -69,11 +69,27 @@ public struct FunctionBodyParameter: Hashable, MetaSwiftConvertible {
     }
 }
 
+public enum FunctionBodyContextKind: Hashable, MetaSwiftConvertible {
+    case unowned
+    case weak
+}
+
+public struct FunctionBodyContext: Hashable, MetaSwiftConvertible {
+    
+    public let name: String
+    
+    public let alias: String?
+    
+    public let kind: FunctionBodyContextKind
+}
+
 public struct FunctionBody: Hashable, MetaSwiftConvertible {
     
     public var members: [FunctionBodyMember] = []
     
     public var parameters: [FunctionBodyParameter] = []
+    
+    public var context: [FunctionBodyContext] = []
     
     public var tuple: Tuple?
     
@@ -120,6 +136,24 @@ public struct FunctionBody: Hashable, MetaSwiftConvertible {
     public func with(tuple: Tuple?) -> FunctionBody {
         var _self = self
         _self.tuple = tuple
+        return _self
+    }
+    
+    public func with(context: [FunctionBodyContext]) -> FunctionBody {
+        var _self = self
+        _self.context = context
+        return _self
+    }
+    
+    public func adding(context: FunctionBodyContext?) -> FunctionBody {
+        var _self = self
+        _self.context += [context].compactMap { $0 }
+        return _self
+    }
+    
+    public func adding(context: [FunctionBodyContext]) -> FunctionBody {
+        var _self = self
+        _self.context += context
         return _self
     }
 }
@@ -363,12 +397,38 @@ extension FunctionBodyParameter {
     }
 }
 
+extension FunctionBodyContextKind {
+    
+    public var swiftString: String {
+        switch self {
+        case .unowned:
+            return "unowned"
+        case .weak:
+            return "weak"
+        }
+    }
+}
+
+extension FunctionBodyContext {
+    
+    public var swiftString: String {
+        let alias = self.alias.flatMap { " = \($0)" } ?? .empty
+        return "\(kind.swiftString) \(name)\(alias)"
+    }
+}
+
 extension FunctionBody {
     
     public var swiftString: String {
         let parameters = self.parameters
             .map { $0.swiftString }
             .joined(separator: ", ")
+        
+        let context = self.context
+            .map { $0.swiftString }
+            .joined(separator: ", ")
+            .prefixed("[")
+            .suffixed("]")
         
         let firstMember = members.first?.swiftString ?? .empty
         let canCompress = members.count == 1 &&
@@ -378,10 +438,10 @@ extension FunctionBody {
         
         if canCompress {
             let member = members.first?.swiftString ?? .empty
-            return "{\(parameters.prefixed(" ").suffixed(" in"))\(member.wrapped(" "))}\(tuple?.swiftString ?? .empty)"
+            return "{\((context.prefixed(" ") + parameters.prefixed(" ")).suffixed(" in"))\(member.wrapped(" "))}\(tuple?.swiftString ?? .empty)"
         } else {
             return """
-            {\(parameters.prefixed(" ").suffixed(" in"))
+            {\((context.prefixed(" ") + parameters.prefixed(" ")).suffixed(" in"))
             \(members.map { $0.swiftString }.indented)\
             }\(tuple?.swiftString ?? .empty)
             """
