@@ -118,6 +118,6 @@ extension Assignment {
         if self.variables.count > 1 {
            variables = variables.wrapped("(", ")")
         }
-        return "\(variables) = \(value.swiftString)"
+        return "\(variables) = \(value.swiftString.trimmingCharacters(in: .whitespaces))"
     }
 }
