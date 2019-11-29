@@ -76,11 +76,19 @@ public enum FunctionBodyContextKind: Hashable, MetaSwiftConvertible {
 
 public struct FunctionBodyContext: Hashable, MetaSwiftConvertible {
     
-    public let name: String
-    
     public let alias: String?
     
+    public let name: String
+    
     public let kind: FunctionBodyContextKind
+    
+    public init(alias: String? = nil,
+                name: String,
+                kind: FunctionBodyContextKind = .unowned) {
+        self.alias = alias
+        self.name = name
+        self.kind = kind
+    }
 }
 
 public struct FunctionBody: Hashable, MetaSwiftConvertible {
@@ -412,8 +420,7 @@ extension FunctionBodyContextKind {
 extension FunctionBodyContext {
     
     public var swiftString: String {
-        let alias = self.alias.flatMap { " = \($0)" } ?? .empty
-        return "\(kind.swiftString) \(name)\(alias)"
+        return "\(kind.swiftString) \(alias?.suffixed(" = ") ?? .empty)\(name)"
     }
 }
 
