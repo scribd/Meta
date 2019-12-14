@@ -447,6 +447,12 @@ extension FunctionBody {
         
         let resultType = self.resultType?.swiftString ?? .empty
         
+        let input = (
+            context.prefixed(" ") +
+            parameters.prefixed(" ") +
+            resultType.prefixed(" -> ")
+        ).wrapped("(", ")").suffixed(" in")
+        
         let firstMember = members.first?.swiftString ?? .empty
         let canCompress = members.count == 1 &&
             firstMember.contains(String.br) == false &&
@@ -455,10 +461,10 @@ extension FunctionBody {
         
         if canCompress {
             let member = members.first?.swiftString ?? .empty
-            return "{\((context.prefixed(" ") + parameters.prefixed(" ") + resultType.prefixed(" -> ")).suffixed(" in"))\(member.wrapped(" "))}\(tuple?.swiftString ?? .empty)"
+            return "{\(input)\(member.wrapped(" "))}\(tuple?.swiftString ?? .empty)"
         } else {
             return """
-            {\((context.prefixed(" ") + parameters.prefixed(" ") + resultType.prefixed(" -> ")).suffixed(" in"))
+            {\(input)
             \(members.map { $0.swiftString }.indented)\
             }\(tuple?.swiftString ?? .empty)
             """
