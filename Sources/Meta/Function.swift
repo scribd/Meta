@@ -449,9 +449,9 @@ extension FunctionBody {
         
         let input = (
             context.prefixed(" ") +
-            parameters.prefixed(" ") +
+            parameters.wrapped("(", ")").prefixed(" ") +
             resultType.prefixed(" -> ")
-        ).wrapped("(", ")").suffixed(" in")
+        ).suffixed(" in")
         
         let firstMember = members.first?.swiftString ?? .empty
         let canCompress = members.count == 1 &&
