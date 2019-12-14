@@ -99,6 +99,8 @@ public struct FunctionBody: Hashable, MetaSwiftConvertible {
     
     public var context: [FunctionBodyContext] = []
     
+    public var resultType: TypeIdentifier?
+    
     public var tuple: Tuple?
     
     public init() {
@@ -126,6 +128,12 @@ public struct FunctionBody: Hashable, MetaSwiftConvertible {
     public func with(parameters: [FunctionBodyParameter]) -> FunctionBody {
         var _self = self
         _self.parameters = parameters
+        return _self
+    }
+    
+    public func with(resultType: TypeIdentifier?) -> FunctionBody {
+        var _self = self
+        _self.resultType = resultType
         return _self
     }
     
@@ -437,6 +445,8 @@ extension FunctionBody {
             .prefixed("[")
             .suffixed("]")
         
+        let resultType = self.resultType?.swiftString ?? .empty
+        
         let firstMember = members.first?.swiftString ?? .empty
         let canCompress = members.count == 1 &&
             firstMember.contains(String.br) == false &&
@@ -445,10 +455,10 @@ extension FunctionBody {
         
         if canCompress {
             let member = members.first?.swiftString ?? .empty
-            return "{\((context.prefixed(" ") + parameters.prefixed(" ")).suffixed(" in"))\(member.wrapped(" "))}\(tuple?.swiftString ?? .empty)"
+            return "{\((context.prefixed(" ") + parameters.prefixed(" ") + resultType.prefixed(" -> ")).suffixed(" in"))\(member.wrapped(" "))}\(tuple?.swiftString ?? .empty)"
         } else {
             return """
-            {\((context.prefixed(" ") + parameters.prefixed(" ")).suffixed(" in"))
+            {\((context.prefixed(" ") + parameters.prefixed(" ") + resultType.prefixed(" -> ")).suffixed(" in"))
             \(members.map { $0.swiftString }.indented)\
             }\(tuple?.swiftString ?? .empty)
             """
