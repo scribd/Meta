@@ -9,7 +9,7 @@ public enum TypeKind: Hashable, MetaSwiftConvertible {
     case `struct`
     case `class`(final: Bool)
     case `protocol`
-    case `enum`
+    case `enum`(indirect: Bool)
     
     static let `default`: TypeKind = .class(final: true)
 }
@@ -305,8 +305,8 @@ extension TypeKind {
         switch self {
         case .class(let final):
             return "\(final ? "final " : .empty)class"
-        case .enum:
-            return "enum"
+        case .enum(let indirect):
+            return "\(indirect ? "indirect " : .empty)enum"
         case .protocol:
             return "protocol"
         case .struct:
