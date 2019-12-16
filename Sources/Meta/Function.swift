@@ -19,6 +19,8 @@ public struct FunctionParameter: Hashable, MetaSwiftConvertible {
     
     public var `inout`: Bool = false
     
+    public var escaping: Bool = false
+    
     public init(alias: String? = nil, name: String, type: TypeIdentifier) {
         self.alias = alias
         self.name = name
@@ -40,6 +42,12 @@ public struct FunctionParameter: Hashable, MetaSwiftConvertible {
     public func with(`inout`: Bool) -> FunctionParameter {
         var _self = self
         _self.inout = `inout`
+        return _self
+    }
+    
+    public func with(escaping: Bool) -> FunctionParameter {
+        var _self = self
+        _self.escaping = escaping
         return _self
     }
 }
@@ -386,7 +394,8 @@ extension FunctionParameter {
         let named = self.named ? .empty : "_ "
         let defaultValue = self.defaultValue.flatMap { $0.swiftString.prefixed(" = ") } ?? .empty
         let `inout` = self.inout ? "inout " : .empty
-        return "\(alias)\(named)\(name): \(`inout`)\(type.swiftString)\(defaultValue)"
+        let escaping = self.escaping ? " @escaping " : .empty
+        return "\(alias)\(named)\(name): \(`inout`)\(escaping)\(type.swiftString)\(defaultValue)"
     }
 }
 
