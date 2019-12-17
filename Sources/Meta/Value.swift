@@ -41,11 +41,11 @@ extension Value {
         case .nil:
             return "nil"
         case .array(let values):
-            var expression = String()
-            values.dropLast().forEach { expression.append("\n\($0.swiftString),") }
-            let newlineOperator = values.isEmpty ? String() : "\n"
-            expression.append("\(newlineOperator)\(values.last?.swiftString ?? String())")
-            return expression.wrapped(.openingSquareBracket, "\(newlineOperator)\(String.closingSquareBracket)", compact: false)
+            return values
+                .lazy
+                .map { $0.swiftString }
+                .joined(separator: ", ")
+                .wrapped(.openingSquareBracket, .closingSquareBracket, compact: false)
         }
     }
 }
