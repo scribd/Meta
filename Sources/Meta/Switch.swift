@@ -5,13 +5,22 @@
 //  Created by Théophane Rupin on 3/8/19.
 //
 
+public enum SwitchCaseVariableOptionality {
+    case some
+    case none
+    case notOptional
+}
+
 public struct SwitchCaseVariable: Hashable, MetaSwiftConvertible {
-    
+
+    public let optionality: SwitchCaseVariableOptionality
+
     public let name: String
-    
+
     public var type: TypeIdentifier?
-    
-    public init(name: String, as type: TypeIdentifier? = nil) {
+
+    public init(optionality: SwitchCaseVariableOptionality = .notOptional, name: String, as type: TypeIdentifier? = nil) {
+        self.optionality = optionality
         self.name = name
         self.type = type
     }
@@ -25,13 +34,13 @@ public enum SwitchCaseName: Hashable, MetaSwiftConvertible {
 }
 
 public struct SwitchCase: Hashable, MetaSwiftConvertible {
-    
+
     public let name: SwitchCaseName?
 
     public var values: [VariableValue] = []
-    
+
     public var body: [FunctionBodyMember] = []
-    
+
     public init(name: SwitchCaseName? = nil) {
         self.name = name
     }
@@ -39,13 +48,13 @@ public struct SwitchCase: Hashable, MetaSwiftConvertible {
     public init(name: String) {
         self.name = .custom(name)
     }
-    
+
     public func with(body: [FunctionBodyMember]) -> SwitchCase {
         var _self = self
         _self.body = body
         return _self
     }
-    
+
     public func adding(member: FunctionBodyMember?) -> SwitchCase {
         var _self = self
         _self.body += [member].compactMap { $0 }
@@ -57,13 +66,13 @@ public struct SwitchCase: Hashable, MetaSwiftConvertible {
         _self.body += members
         return _self
     }
-    
+
     public func with(values: [VariableValue]) -> SwitchCase {
         var _self = self
         _self.values = values
         return _self
     }
-    
+
     public func adding(value: VariableValue?) -> SwitchCase {
         var _self = self
         _self.values += [value].compactMap { $0 }
@@ -78,27 +87,27 @@ public struct SwitchCase: Hashable, MetaSwiftConvertible {
 }
 
 public struct Switch: Hashable, Node {
-    
+
     public let reference: Reference
-    
+
     public var cases: [SwitchCase] = []
-    
+
     public init(reference: Reference) {
         self.reference = reference
     }
-    
+
     public func with(cases: [SwitchCase]) -> Switch {
         var _self = self
         _self.cases = cases
         return _self
     }
-    
+
     public func adding(case: SwitchCase?) -> Switch {
         var _self = self
         _self.cases += [`case`].compactMap { $0 }
         return _self
     }
-    
+
     public func adding(cases: [SwitchCase]) -> Switch {
         var _self = self
         _self.cases += cases
@@ -111,14 +120,22 @@ extension Switch: FunctionBodyMember {}
 // MARK: - MetaSwiftString
 
 extension SwitchCaseVariable {
-    
+
     public var swiftString: String {
-        return "let \(name)\(type?.swiftString.prefixed(" as ") ?? .empty)"
+        let assignment = "let \(name)\(type?.swiftString.prefixed(" as ") ?? .empty)"
+        switch optionality {
+        case .some:
+            return ".some(\(assignment))"
+        case .none:
+            return ".none"
+        case .notOptional:
+            return assignment
+        }
     }
 }
 
 extension SwitchCaseName {
-    
+
     public var swiftString: String {
         switch self {
         case .default:
@@ -130,7 +147,7 @@ extension SwitchCaseName {
 }
 
 extension SwitchCase {
-    
+
     public var swiftString: String {
         let name = self.name?.swiftString ?? "case "
         var variables = self.values.map { $0.swiftString }.joined(separator: ", ")
@@ -146,7 +163,7 @@ extension SwitchCase {
 }
 
 extension Switch {
-    
+
     public var swiftString: String {
         return """
         switch \(reference.swiftString) {
