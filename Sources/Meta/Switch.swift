@@ -5,13 +5,22 @@
 //  Created by Théophane Rupin on 3/8/19.
 //
 
+public enum SwitchCaseVariableOptionality {
+    case some
+    case none
+    case notOptional
+}
+
 public struct SwitchCaseVariable: Hashable, MetaSwiftConvertible {
     
+    public let optionality: SwitchCaseVariableOptionality
+
     public let name: String
     
     public var type: TypeIdentifier?
-    
-    public init(name: String, as type: TypeIdentifier? = nil) {
+
+    public init(optionality: SwitchCaseVariableOptionality = .notOptional, name: String, as type: TypeIdentifier? = nil) {
+        self.optionality = optionality
         self.name = name
         self.type = type
     }
@@ -113,7 +122,15 @@ extension Switch: FunctionBodyMember {}
 extension SwitchCaseVariable {
     
     public var swiftString: String {
-        return "let \(name)\(type?.swiftString.prefixed(" as ") ?? .empty)"
+        let assignment = "let \(name)\(type?.swiftString.prefixed(" as ") ?? .empty)"
+        switch optionality {
+        case .some:
+            return ".some(\(assignment))"
+        case .none:
+            return ".none"
+        case .notOptional:
+            return assignment
+        }
     }
 }
 
