@@ -7,11 +7,13 @@
 
 import Foundation
 
-public struct Comment: Hashable, FileBodyMember, TypeBodyMember, FunctionBodyMember {
+public struct Comment: Hashable {
     
     public let content: String
     
     public let documentation: Bool
+    
+    public var plateforms: [String] = []
     
     init(_ content: String, documentation: Bool = false) {
         self.content = content
@@ -33,11 +35,16 @@ public struct Comment: Hashable, FileBodyMember, TypeBodyMember, FunctionBodyMem
     }
 }
 
+extension Comment: CrossPlateformMember {}
+extension Comment: FileBodyMember {}
+extension Comment: TypeBodyMember {}
+extension Comment: FunctionBodyMember {}
+
 // MARK: - MetaSwiftConvertible
 
 extension Comment {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         return "\("/".repeat(documentation ? 3 : 2))\(content.isEmpty ? .empty : " ")\(content)"
     }
 }

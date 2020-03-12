@@ -8,6 +8,7 @@
 import Foundation
 
 public protocol MetaSwiftConvertible {
+
     var swiftString: String { get }
 }
 

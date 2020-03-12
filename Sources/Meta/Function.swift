@@ -21,6 +21,8 @@ public struct FunctionParameter: Hashable, MetaSwiftConvertible {
     
     public var escaping: Bool = false
     
+    public var plateforms: [String] = []
+    
     public init(alias: String? = nil, name: String, type: TypeIdentifier) {
         self.alias = alias
         self.name = name
@@ -48,6 +50,12 @@ public struct FunctionParameter: Hashable, MetaSwiftConvertible {
     public func with(escaping: Bool) -> FunctionParameter {
         var _self = self
         _self.escaping = escaping
+        return _self
+    }
+    
+    public func with(plateforms: [String]) -> FunctionParameter {
+        var _self = self
+        _self.plateforms = plateforms
         return _self
     }
 }
@@ -208,6 +216,8 @@ public struct Function: Hashable, Node {
     
     public var objc = false
     
+    public var plateforms: [String] = []
+    
     public init(kind: FunctionKind) {
         self.kind = kind
     }
@@ -323,6 +333,7 @@ public struct Function: Hashable, Node {
 
 extension Function: FileBodyMember {}
 extension Function: TypeBodyMember {}
+extension Function: CrossPlateformMember {}
 
 public struct ProtocolFunction: Hashable, Node {
     
@@ -335,6 +346,8 @@ public struct ProtocolFunction: Hashable, Node {
     public var accessLevel: AccessLevel = .default
     
     public var resultType: TypeIdentifier?
+    
+    public var plateforms: [String] = []
     
     public init(name: String) {
         self.name = name
@@ -384,6 +397,7 @@ public struct ProtocolFunction: Hashable, Node {
 }
 
 extension ProtocolFunction: TypeBodyMember {}
+extension ProtocolFunction: CrossPlateformMember {}
 
 // MARK: - MetaSwiftConvertible
 
@@ -466,7 +480,8 @@ extension FunctionBody {
         let canCompress = members.count == 1 &&
             firstMember.contains(String.br) == false &&
             firstMember.count <= 80 &&
-            !(members.first is Comment)
+            !(members.first is Comment) &&
+            members.filter { ($0 as? CrossPlateformMember)?.plateforms.count ?? 0 > 0 }.isEmpty
         
         if canCompress {
             let member = members.first?.swiftString ?? .empty
@@ -479,11 +494,37 @@ extension FunctionBody {
             """
         }
     }
+    
+    public func crossPlateformSwiftString(for platforms: Set<String>) -> String {
+        
+        guard platforms.isEmpty == false else {
+            return swiftString
+        }
+        
+        var _self = self
+        _self.members = members.compactMap {
+            guard let member = $0 as? (CrossPlateformMember & FunctionBodyMember) else {
+                return $0
+            }
+
+            guard member.plateforms.isEmpty == false else {
+                return member
+            }
+            
+            if platforms.intersection(member.plateforms).isEmpty {
+                return nil
+            } else {
+                return member.with(plateforms: [])
+            }
+        }
+        
+        return _self.swiftString
+    }
 }
 
 extension Function {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let `static` = self.static ? "static " : .empty
         let objc = self.objc ? "@objc " : .empty
         let accessLevel = self.accessLevel.swiftString.suffixed(" ")
@@ -509,8 +550,16 @@ extension Function {
             .map { $0.swiftString }
             .joined(separator: ", ")
 
-        let build = {
-            return "\(beforeParameters)\(parameters))\(`throws`)\(resultType)\(constraints) \(self.body.swiftString)"
+        let build = { () -> String in
+            let body: String
+            
+            if self.plateforms.isEmpty {
+                body = self.body.swiftString
+            } else {
+                body = self.body.crossPlateformSwiftString(for: Set(self.plateforms))
+            }
+            
+            return "\(beforeParameters)\(parameters))\(`throws`)\(resultType)\(constraints) \(body)"
         }
 
         if self.parameters.count > 4 || build().count > 80 {
@@ -521,11 +570,53 @@ extension Function {
 
         return build()
     }
+    
+    public var swiftString: String {
+        
+        let plateforms = Set(parameters.lazy.flatMap { $0.plateforms }).sorted()
+        guard plateforms.isEmpty == false else {
+            return internalSwiftString
+        }
+        
+        var platformCombinations = plateforms.combinationsWithoutRepetition
+        
+        platformCombinations.removeFirst()
+        if platformCombinations.count > 1 {
+            platformCombinations.removeLast()
+        }
+
+        return "#if " + platformCombinations
+            .enumerated()
+            .map { index, includedPlateforms in
+                let isLast = index == platformCombinations.count - 1
+
+                let includedPlateformsSet = Set(includedPlateforms)
+                var _self = self
+                _self.parameters = _self.parameters.filter {
+                    $0.plateforms.isEmpty || includedPlateformsSet.intersection($0.plateforms).isEmpty == false
+                }
+                _self.plateforms = includedPlateforms
+                
+                return """
+                \(includedPlateforms.map { "os(\($0))" }.joined(separator: " || "))
+                \(_self.internalSwiftString)
+                \(isLast ? "#else" : "#elseif ")
+                """
+            }.joined() + """
+            
+            \({ () -> String in
+                var _self = self
+                _self.parameters = _self.parameters.map { $0.with(plateforms: []) }
+                return _self.with(plateforms: []).internalSwiftString
+            }())
+            #endif
+            """
+    }
 }
 
 extension ProtocolFunction {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let genericParameters = self.genericParameters
             .map { $0.swiftString }
             .joined(separator: ", ")

@@ -39,6 +39,8 @@ public struct Do: Hashable, Node {
     public let body: [FunctionBodyMember]
     
     public var catches: [Catch]
+    
+    public var plateforms: [String] = []
 
     public init(body: [FunctionBodyMember], catch: Catch) {
         self.body = body
@@ -52,6 +54,7 @@ public struct Do: Hashable, Node {
 }
 
 extension Do: FunctionBodyMember {}
+extension Do: CrossPlateformMember {}
 
 // MARK: - MetaSwiftConvertible
 
@@ -70,7 +73,7 @@ extension Catch {
 
 extension Do {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let body = self.body.map { $0.swiftString }.indented
         let catches = self.catches.map { $0.swiftString }.joined(separator: " ")
         return """

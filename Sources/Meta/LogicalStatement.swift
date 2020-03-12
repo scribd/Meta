@@ -40,6 +40,8 @@ public struct Guard: Hashable, Node {
     
     public var body: [FunctionBodyMember] = []
     
+    public var plateforms: [String] = []
+    
     public init(condition: LogicalStatement) {
         self.conditions = [condition]
         assignments = []
@@ -106,12 +108,15 @@ public struct Guard: Hashable, Node {
 }
 
 extension Guard: FunctionBodyMember {}
+extension Guard: CrossPlateformMember {}
 
 public struct ElseIf: Hashable, Node {
     
     public var ifs: [If]
     
     public var body: [FunctionBodyMember] = []
+    
+    public var plateforms: [String] = []
     
     public init(if: If) {
         ifs = [`if`]
@@ -155,6 +160,7 @@ public struct ElseIf: Hashable, Node {
 }
 
 extension ElseIf: FunctionBodyMember {}
+extension ElseIf: CrossPlateformMember {}
 
 public struct If: Hashable, Node {
     
@@ -163,6 +169,8 @@ public struct If: Hashable, Node {
     public var conditions: [LogicalStatement]
     
     public var body: [FunctionBodyMember] = []
+    
+    public var plateforms: [String] = []
     
     public init(condition: LogicalStatement) {
         self.conditions = [condition]
@@ -230,6 +238,7 @@ public struct If: Hashable, Node {
 }
 
 extension If: FunctionBodyMember {}
+extension If: CrossPlateformMember {}
 
 // MARK: Syntactic Sugar
 
@@ -533,7 +542,7 @@ extension LogicalStatement {
 
 extension Guard {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let assignments = self.assignments.map { $0.swiftString }
         let conditions = self.conditions.map { $0.swiftString }
         let elements = (assignments + conditions).joined(separator: ", ")
@@ -549,7 +558,7 @@ extension Guard {
 
 extension If {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let assignments = self.assignments.map { $0.swiftString }
         let conditions = self.conditions.map { $0.swiftString }
         let elements = (assignments + conditions).joined(separator: ", ")
@@ -565,7 +574,7 @@ extension If {
 
 extension ElseIf {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let ifs = self.ifs
             .map { $0.swiftString }
             .joined(separator: " else ")

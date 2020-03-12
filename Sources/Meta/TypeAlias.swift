@@ -38,13 +38,15 @@ public struct TypeAliasIdentifier: Hashable, MetaSwiftConvertible {
     }
 }
 
-public struct TypeAlias: Hashable, MetaSwiftConvertible {
+public struct TypeAlias: Hashable {
     
     public let identifier: TypeAliasIdentifier
 
     public let values: [TypeIdentifier]
 
     public var accessLevel: AccessLevel = .default
+    
+    public var plateforms: [String] = []
     
     public init(identifier: TypeAliasIdentifier, value: TypeIdentifier) {
         self.identifier = identifier
@@ -65,6 +67,7 @@ public struct TypeAlias: Hashable, MetaSwiftConvertible {
 
 extension TypeAlias: FileBodyMember {}
 extension TypeAlias: TypeBodyMember {}
+extension TypeAlias: CrossPlateformMember {}
 
 // MARK: - MetaSwiftConvertible
 
@@ -82,7 +85,7 @@ extension TypeAliasIdentifier {
 
 extension TypeAlias {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let beforeValues = "\(accessLevel.swiftString.suffixed(" "))typealias \(identifier.swiftString) = "
         var values = self.values
             .map { $0.swiftString }

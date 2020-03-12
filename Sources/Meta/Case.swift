@@ -17,13 +17,15 @@ public struct CaseParameter: Hashable, MetaSwiftConvertible {
     }
 }
 
-public struct Case: Hashable, Node {
+public struct Case: Hashable {
     
     public let name: String
     
     public var parameters: [CaseParameter] = []
     
     public var value: Value?
+    
+    public var plateforms: [String] = []
     
     public init(name: String) {
         self.name = name
@@ -55,6 +57,7 @@ public struct Case: Hashable, Node {
 }
 
 extension Case: TypeBodyMember {}
+extension Case: CrossPlateformMember {}
 
 // MARK: - MetaSwiftConvertible
 
@@ -68,7 +71,7 @@ extension CaseParameter {
 
 extension Case {
 
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let parameters = self.parameters.map { $0.swiftString }.joined(separator: ", ").wrapped("(", ")")
         let value = self.value?.swiftString ?? .empty
         return "case \(name)\(parameters)\(value.prefixed(" = "))"

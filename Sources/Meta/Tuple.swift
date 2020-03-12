@@ -11,6 +11,8 @@ public struct TupleParameter: Hashable, MetaSwiftConvertible {
     
     public let value: VariableValue?
     
+    public var plateforms: [String] = []
+    
     public init(name: String, value: VariableValue) {
         self.variable = Reference.named(name)
         self.value = value
@@ -27,9 +29,13 @@ public struct TupleParameter: Hashable, MetaSwiftConvertible {
     }
 }
 
+extension TupleParameter: CrossPlateformMember {}
+
 public struct Tuple: Hashable, Node {
     
     public var parameters: [TupleParameter] = []
+    
+    public var plateforms: [String] = []
     
     public init() {
         // no-op
@@ -57,12 +63,13 @@ public struct Tuple: Hashable, Node {
 extension Tuple: FileBodyMember {}
 extension Tuple: FunctionBodyMember {}
 extension Tuple: VariableValue {}
+extension Tuple: CrossPlateformMember {}
 
 // MARK: - MetaSwiftConvertible
 
 extension TupleParameter {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let variable = self.variable?.swiftString ?? .empty
         let value = self.value?.swiftString ?? .empty
         return [variable, value].assemble(separator: ": ")
@@ -71,7 +78,7 @@ extension TupleParameter {
 
 extension Tuple {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let parameters = self.parameters.map { $0.swiftString }.joined(separator: ", ")
         
         if self.parameters.count > 4 || parameters.count > 80 {

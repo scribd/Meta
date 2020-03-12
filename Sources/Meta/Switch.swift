@@ -41,6 +41,8 @@ public struct SwitchCase: Hashable, MetaSwiftConvertible {
     
     public var body: [FunctionBodyMember] = []
     
+    public var plateforms: [String] = []
+    
     public init(name: SwitchCaseName? = nil) {
         self.name = name
     }
@@ -86,11 +88,15 @@ public struct SwitchCase: Hashable, MetaSwiftConvertible {
     }
 }
 
+extension SwitchCase: CrossPlateformMember {}
+
 public struct Switch: Hashable, Node {
     
     public let reference: Reference
     
     public var cases: [SwitchCase] = []
+    
+    public var plateforms: [String] = []
     
     public init(reference: Reference) {
         self.reference = reference
@@ -116,6 +122,7 @@ public struct Switch: Hashable, Node {
 }
 
 extension Switch: FunctionBodyMember {}
+extension Switch: CrossPlateformMember {}
 
 // MARK: - MetaSwiftString
 
@@ -148,7 +155,7 @@ extension SwitchCaseName {
 
 extension SwitchCase {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let name = self.name?.swiftString ?? "case "
         var variables = self.values.map { $0.swiftString }.joined(separator: ", ")
         if self.values.count > 1 || self.name != nil {
@@ -164,7 +171,7 @@ extension SwitchCase {
 
 extension Switch {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         return """
         switch \(reference.swiftString) {
         \(cases.map { $0.swiftString }.br)

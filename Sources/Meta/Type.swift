@@ -176,7 +176,7 @@ public struct TypeIdentifier: Hashable, MetaSwiftConvertible {
     }
 }
 
-public struct Type: Hashable, FileBodyMember, TypeBodyMember {
+public struct Type: Hashable {
     
     public let name: TypeIdentifierName
     
@@ -193,6 +193,8 @@ public struct Type: Hashable, FileBodyMember, TypeBodyMember {
     public var constraints: [LogicalStatement] = []
     
     public var objc = false
+    
+    public var plateforms: [String] = []
 
     public init(name: TypeIdentifierName) {
         self.name = name
@@ -297,6 +299,10 @@ public struct Type: Hashable, FileBodyMember, TypeBodyMember {
     }
 }
 
+extension Type: FileBodyMember {}
+extension Type: TypeBodyMember {}
+extension Type: CrossPlateformMember {}
+
 // MARK: - MetaSwiftConvertible
 
 extension TypeKind {
@@ -346,7 +352,7 @@ extension TypeIdentifier {
 
 extension Type {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let objc = self.objc ? "@objc " : .empty
         
         let genericParameters = self.genericParameters

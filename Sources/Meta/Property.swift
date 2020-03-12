@@ -17,6 +17,7 @@ public struct Property: Hashable, Node {
     
     public var value: VariableValue?
     
+    public var plateforms: [String] = []
     
     public init(variable: Variable) {
         self.variable = variable
@@ -48,6 +49,7 @@ public struct Property: Hashable, Node {
 }
 
 extension Property: TypeBodyMember {}
+extension Property: CrossPlateformMember {}
 
 public struct ProtocolProperty: Hashable, Node {
     
@@ -56,6 +58,8 @@ public struct ProtocolProperty: Hashable, Node {
     public let type: TypeIdentifier
     
     public var setter = false
+    
+    public var plateforms: [String] = []
     
     public init(name: String, type: TypeIdentifier) {
         self.name = name
@@ -70,6 +74,7 @@ public struct ProtocolProperty: Hashable, Node {
 }
 
 extension ProtocolProperty: TypeBodyMember {}
+extension ProtocolProperty: CrossPlateformMember {}
 
 public struct ComputedProperty: Hashable, Node {
     
@@ -80,6 +85,8 @@ public struct ComputedProperty: Hashable, Node {
     public let variable: Variable
     
     public var body: [FunctionBodyMember] = []
+
+    public var plateforms: [String] = []
     
     public init(variable: Variable) {
         self.variable = variable
@@ -117,6 +124,7 @@ public struct ComputedProperty: Hashable, Node {
 }
 
 extension ComputedProperty: TypeBodyMember {}
+extension ComputedProperty: CrossPlateformMember {}
 
 public struct GetterSetter: Hashable, Node {
     
@@ -127,6 +135,8 @@ public struct GetterSetter: Hashable, Node {
     public var getterBody: [FunctionBodyMember]?
     
     public var setterBody: [FunctionBodyMember]?
+    
+    public var plateforms: [String] = []
     
     public init(variable: Variable) {
         self.variable = variable
@@ -176,12 +186,13 @@ public struct GetterSetter: Hashable, Node {
 }
 
 extension GetterSetter: TypeBodyMember {}
+extension GetterSetter: CrossPlateformMember {}
 
 // MARK: - MetaSwiftConvertible
 
 extension Property {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let objc = self.objc ? "@objc " : .empty
         let `static` = self.static ? "static " : .empty
         let value = self.value?.swiftString.prefixed(" = ") ?? .empty
@@ -191,14 +202,14 @@ extension Property {
 
 extension ProtocolProperty {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         return "var \(name): \(type.swiftString) { get\(setter ? " set" : .empty) }"
     }
 }
 
 extension ComputedProperty {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let objc = self.objc ? "@objc " : .empty
         return """
         \(objc)\(accessLevel.swiftString.suffixed(" "))\(variable.with(immutable: false).swiftString) {
@@ -210,7 +221,7 @@ extension ComputedProperty {
 
 extension GetterSetter {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         
         let getter: String
         if let getterBody = getterBody {

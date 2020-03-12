@@ -27,6 +27,8 @@ public struct Variable: Hashable, MetaSwiftConvertible {
     
     public var `as` = false
     
+    public var plateforms: [String] = []
+    
     public init(name: String) {
         self.name = name
     }
@@ -62,7 +64,7 @@ public struct Variable: Hashable, MetaSwiftConvertible {
     }
     
     public var reference: Reference {
-        return .name(.custom(name))
+        return ._name(.custom(name), plateforms: [])
     }
 }
 
@@ -71,6 +73,8 @@ public struct Assignment: Hashable, Node {
     public var variables: [AssignmentVariable] = []
     
     public let value: VariableValue
+    
+    public var plateforms: [String] = []
 
     public init(variable: AssignmentVariable, value: VariableValue) {
         self.variables = [variable]
@@ -95,13 +99,15 @@ extension Variable: FileBodyMember {}
 extension Variable: FunctionBodyMember {}
 extension Variable: TypeBodyMember {}
 extension Variable: AssignmentVariable {}
+extension Variable: CrossPlateformMember {}
 extension Assignment: FunctionBodyMember {}
+extension Assignment: CrossPlateformMember {}
 
 // MARK: - MetaSwiftConvertible
 
 extension Variable {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         let kind = self.kind.swiftString.suffixed(" ")
         let typePrefix = self.as ? " as " : ": "
         let type = self.type?.swiftString.prefixed(typePrefix) ?? .empty
@@ -113,7 +119,7 @@ extension Variable {
 
 extension Assignment {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         var variables = self.variables.map { $0.swiftString }.joined(separator: ", ")
         if self.variables.count > 1 {
            variables = variables.wrapped("(", ")")

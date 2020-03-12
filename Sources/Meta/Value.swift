@@ -19,6 +19,43 @@ public enum Value: Hashable, Node {
 }
 
 extension Value: VariableValue {}
+extension Value: CrossPlateformVariableValue {}
+
+// MARK: - CrossPlateformVariableValue
+
+extension Value {
+    
+    var plateforms: [String] {
+        switch self {
+        case .reference(let reference):
+            return reference.plateforms
+        case .array(let values):
+            return values.flatMap { $0.plateforms }
+        default:
+            return []
+        }
+    }
+    
+    func filtering(for includedPlateforms: [String]) -> Value? {
+        switch self {
+        case .reference(let reference):
+            guard let reference = reference.filtering(for: includedPlateforms) else {
+                return nil
+            }
+            return .reference(reference)
+
+        case .array(let values):
+            let values = values.compactMap { $0.filtering(for: includedPlateforms) }
+            guard values.isEmpty == false else {
+                return nil
+            }
+            return .array(values)
+            
+        default:
+            return self
+        }
+    }
+}
 
 // MARK: - MetaSwiftConvertible
 

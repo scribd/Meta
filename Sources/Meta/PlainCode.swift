@@ -9,6 +9,8 @@ public struct PlainCode: Hashable, Node {
     
     public let code: String
     
+    public var plateforms: [String] = []
+    
     public init(code: String) {
         self.code = code
     }
@@ -19,6 +21,7 @@ extension PlainCode: FunctionBodyMember {}
 extension PlainCode: TypeBodyMember {}
 extension PlainCode: FileBodyMember {}
 extension PlainCode: AssignmentVariable {}
+extension PlainCode: CrossPlateformMember {}
 
 public struct MetaCode: Hashable, MetaSwiftConvertible, CustomStringConvertible {
     
@@ -41,7 +44,7 @@ public struct MetaCode: Hashable, MetaSwiftConvertible, CustomStringConvertible 
 
 extension PlainCode {
     
-    public var swiftString: String {
+    public var internalSwiftString: String {
         return code
             .components(separatedBy: String.br)
             .map { $0.replacingOccurrences(of: " ", with: "").isEmpty ? " " : String($0) }
