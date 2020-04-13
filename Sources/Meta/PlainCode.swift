@@ -56,11 +56,12 @@ extension MetaCode {
     }
 
     public var swiftString: String {
-        guard metaElements.isEmpty == false else { return String() }
         var string = metaElements
             .map { $0.swiftString }
             .indented(indentation)
-        string.removeLast()
+        if string.isEmpty == false {
+            string.removeLast()
+        }
         return string
     }
 }
