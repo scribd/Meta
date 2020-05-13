@@ -31,6 +31,7 @@ extension SwitchCaseVariable: VariableValue {}
 public enum SwitchCaseName: Hashable, MetaSwiftConvertible {
     case `default`
     case custom(String)
+    case nonEnum(String)
 }
 
 public struct SwitchCase: Hashable, MetaSwiftConvertible {
@@ -142,6 +143,8 @@ extension SwitchCaseName {
             return "default"
         case .custom(let name):
             return "case .\(name)"
+        case .nonEnum(let name):
+            return "case \(name)"
         }
     }
 }
