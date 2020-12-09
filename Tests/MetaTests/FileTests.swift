@@ -94,7 +94,7 @@ final class FileTests: XCTestCase {
         let barID = TypeIdentifier(name: "Bar")
         let bar = Type(identifier: barID)
             .adding(inheritedType: .string)
-            .with(kind: .enum)
+            .with(kind: .enum(indirect: false))
             .with(accessLevel: .public)
             .adding(member: Case(name: "hello").with(value: .string("Hello")))
             .adding(member: Case(name: "world"))
