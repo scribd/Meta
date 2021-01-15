@@ -6,6 +6,7 @@
 //
 
 public enum AccessLevel: Hashable, MetaSwiftConvertible {
+    case open
     case `public`
     case `internal`
     case `private`
@@ -24,6 +25,8 @@ extension AccessLevel {
     
     public var swiftString: String {
         switch self {
+        case .open:
+            return "open"
         case .public:
             return "public"
         case .internal:
