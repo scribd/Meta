@@ -16,6 +16,20 @@ public enum ReferenceName: Hashable, MetaSwiftConvertible {
     case custom(String)
 }
 
+public enum CastingType: Hashable, MetaSwiftConvertible {
+    case strict(TypeIdentifier)
+    case optional(TypeIdentifier)
+
+    public var swiftString: String {
+        switch self {
+        case .strict(let typeIdentifier):
+            return " as \(typeIdentifier.reference.swiftString)"
+        case .optional(let typeIdentifier):
+            return " as? \(typeIdentifier.reference.swiftString)"
+        }
+    }
+}
+
 public enum Reference: Hashable, MetaSwiftConvertible, Node {
     case type(TypeIdentifier)
     case name(ReferenceName)
@@ -25,7 +39,7 @@ public enum Reference: Hashable, MetaSwiftConvertible, Node {
     case optionalTry
     case `throw`
     case block(FunctionBody)
-    case `as`
+    case `as`(CastingType)
     case none
     indirect case dot(Reference, Reference)
     indirect case assemble(Reference, Reference)
@@ -147,8 +161,8 @@ extension Reference {
             return "throw "
         case .block(let block):
             return block.swiftString.prefixed(" ")
-        case .as:
-            return " as "
+        case .as(let castingType):
+            return castingType.swiftString
         case .none:
             return ""
         }
