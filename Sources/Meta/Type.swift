@@ -194,6 +194,8 @@ public struct Type: Hashable, FileBodyMember, TypeBodyMember {
     
     public var objc = false
 
+    public var objcPrefix: String?
+
     public init(name: TypeIdentifierName) {
         self.name = name
     }
@@ -290,9 +292,10 @@ public struct Type: Hashable, FileBodyMember, TypeBodyMember {
         return _self
     }
     
-    public func with(objc: Bool) -> Type {
+    public func with(objc: Bool, prefix: String? = nil) -> Type {
         var _self = self
         _self.objc = objc
+        _self.objcPrefix = prefix
         return _self
     }
 }
@@ -347,7 +350,16 @@ extension TypeIdentifier {
 extension Type {
     
     public var swiftString: String {
-        let objc = self.objc ? "@objc " : .empty
+        let objcString: String
+        if objc {
+            if let objcPrefix = objcPrefix {
+                objcString = "@objc(\(objcPrefix)\(name.swiftString))\n"
+            } else {
+                objcString = "@objc "
+            }
+        } else {
+            objcString = .empty
+        }
         
         let genericParameters = self.genericParameters
             .map { $0.swiftString }
@@ -365,7 +377,7 @@ extension Type {
             .prefixed(" where ")
         
         return """
-        \(objc)\(accessLevel.swiftString.suffixed(" "))\(kind.swiftString) \(name.swiftString)\(genericParameters)\(inheritedTypes)\(constraints) {
+        \(objcString)\(accessLevel.swiftString.suffixed(" "))\(kind.swiftString) \(name.swiftString)\(genericParameters)\(inheritedTypes)\(constraints) {
         \(body.map { $0.swiftString }.indented)\
         }
         """
