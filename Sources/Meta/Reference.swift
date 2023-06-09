@@ -35,6 +35,7 @@ public enum Reference: Hashable, MetaSwiftConvertible, Node {
     case name(ReferenceName)
     case tuple(Tuple)
     case unwrap
+    case `await`
     case `try`
     case optionalTry
     case `throw`
@@ -62,6 +63,7 @@ public enum Reference: Hashable, MetaSwiftConvertible, Node {
              .name,
              .tuple,
              .unwrap,
+             .await,
              .try,
              .optionalTry,
              .throw,
@@ -153,6 +155,8 @@ extension Reference {
             return tuple.swiftString
         case .unwrap:
             return "?"
+        case .await:
+            return "await "
         case .try:
             return "try "
         case .optionalTry:
