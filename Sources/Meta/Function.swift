@@ -199,7 +199,9 @@ public struct Function: Hashable, Node {
     public var body = FunctionBody()
     
     public var resultType: TypeIdentifier?
-    
+
+    public var `async` = false
+
     public var `throws` = false
     
     public var `static` = false
@@ -295,7 +297,13 @@ public struct Function: Hashable, Node {
         _self.resultType = resultType
         return _self
     }
-    
+
+    public func with(async: Bool) -> Function {
+        var _self = self
+        _self.async = `async`
+        return _self
+    }
+
     public func with(throws: Bool) -> Function {
         var _self = self
         _self.throws = `throws`
@@ -492,7 +500,9 @@ extension Function {
             .map { $0.swiftString }
             .joined(separator: ", ")
             .wrapped("<", ">")
-        
+
+        let `async` = self.async ? " async" : .empty
+
         let `throws` = self.throws ? " throws" : .empty
         
         let resultType = self.resultType?.swiftString.prefixed(" -> ") ?? .empty
@@ -510,7 +520,7 @@ extension Function {
             .joined(separator: ", ")
 
         let build = {
-            return "\(beforeParameters)\(parameters))\(`throws`)\(resultType)\(constraints) \(self.body.swiftString)"
+            return "\(beforeParameters)\(parameters))\(`async`)\(`throws`)\(resultType)\(constraints) \(self.body.swiftString)"
         }
 
         if self.parameters.count > 4 || build().count > 80 {

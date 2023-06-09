@@ -90,7 +90,21 @@ final class FileTests: XCTestCase {
                     .adding(member: Return(value: Value.bool(true))
                 )
             )
-        
+            .adding(member: EmptyLine())
+            .adding(member:
+                Function(kind: .named("printError"))
+                    .with(async: true)
+                    .with(throws: true)
+                    .with(resultType: TypeIdentifier.bool)
+                    .adding(member: .await | .type(TypeIdentifier(name: "Logger")) + .named("error") | .call(Tuple()
+                        .adding(parameter: TupleParameter(value: +.named("error")))
+                        .adding(parameter: TupleParameter(value: Reference.named("lowercasedMessage")))
+                        .adding(parameter: TupleParameter(name: "assert", value: Value.bool(true))))
+                    )
+                    .adding(member: Return(value: Value.bool(true))
+                )
+            )
+
         let barID = TypeIdentifier(name: "Bar")
         let bar = Type(identifier: barID)
             .adding(inheritedType: .string)
@@ -169,6 +183,11 @@ final class FileTests: XCTestCase {
         private extension Foo: ErrorPrintable {
             func printError() -> Bool {
                 Logger.error(.error, lowercasedMessage, assert: true)
+                return true
+            }
+
+            func printError() async throws -> Bool {
+                await Logger.error(.error, lowercasedMessage, assert: true)
                 return true
             }
         }
