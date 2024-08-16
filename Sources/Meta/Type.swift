@@ -196,6 +196,8 @@ public struct Type: Hashable, FileBodyMember, TypeBodyMember {
 
     public var objcPrefix: String?
 
+    public var actorName: String?
+
     public init(name: TypeIdentifierName) {
         self.name = name
     }
@@ -298,6 +300,12 @@ public struct Type: Hashable, FileBodyMember, TypeBodyMember {
         _self.objcPrefix = prefix
         return _self
     }
+
+    public func with(actorName: String? = nil) -> Type {
+        var _self = self
+        _self.actorName = actorName
+        return _self
+    }
 }
 
 // MARK: - MetaSwiftConvertible
@@ -357,6 +365,8 @@ extension Type {
             } else {
                 objcString = "@objc "
             }
+        } else if let actorName = actorName, actorName.isEmpty == false {
+            objcString = "@\(actorName) "
         } else {
             objcString = .empty
         }
