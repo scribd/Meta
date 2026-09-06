@@ -19,7 +19,7 @@ public enum AccessLevel: Hashable, MetaSwiftConvertible {
     static let `default`: AccessLevel = .none
 }
 
-// MARK: - MetaSwidtConvertible
+// MARK: - MetaSwiftConvertible
 
 extension AccessLevel {
     
